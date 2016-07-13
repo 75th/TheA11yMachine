@@ -10,12 +10,14 @@ module.exports = {
     error: reportError,
     debug: emptyFunction,
     info: emptyFunction,
-    results: reportResults
+    results: reportResults,
+    codesReport: codesReport
 };
 
 var outputDirectory = null;
 var indexHtmlStream = null;
 var statistics      = [];
+var resultsData    = [];
 
 function emptyFunction() {}
 
@@ -140,6 +142,97 @@ function reportResults(results, url) {
         }
 
     );
+
+    // Store all results
+    resultsData.push(results);
+
+    fs.writeFileSync(
+        outputDirectory + '/results.json',
+        JSON.stringify(resultsData),
+        {
+            flag    : 'w',
+            encoding: 'utf8'
+        }
+
+    );
+}
+
+function codesReport(options) {
+    outputDirectory = options.outputDirectory;
+    mkdirp.sync(outputDirectory);
+
+    var resultsJson = JSON.parse(fs.readFileSync(outputDirectory + '/results.json', 'utf8'));
+    var codes = [];
+
+    _.each(resultsJson, function(urls) {
+        _.each(urls, function(obj) {
+            var match = _.where(codes, {code: obj.code});
+            var url = {url: obj.url, context: obj.context, selector: obj.selector};
+            if (match.length == 0) {
+                var hash = crypto.createHash('sha1').update(obj.code).digest('hex');
+                codes.push({
+                    code: obj.code,
+                    reportUrl: './' + hash + '.html',
+                    message: obj.message,
+                    instances: 1,
+                    urls: [url]
+                });
+            }
+            else {
+                match[0].instances++;
+                match[0].urls.push(url);
+            }
+        });
+    });
+
+    // Codes index page
+    var indexDotHtml = _.template(
+        fs.readFileSync(__dirname + '/../view/reports/codes/index.html', {encoding: 'utf-8'})
+    );
+
+    var options = {
+        date : new Date(),
+        codes: codes,
+        css  : {
+            common: fs.readFileSync(__dirname + '/../view/common.css', {encoding: 'utf-8'})
+        }
+    };
+
+    fs.writeFileSync(
+        outputDirectory + '/index-codes.html',
+        indexDotHtml(options),
+        {
+            flag    : 'w',
+            encoding: 'utf8'
+        }
+    );
+
+    // Code report page
+    var codeReportDotHtml = _.template(
+        fs.readFileSync(__dirname + '/../view/reports/codes/report.html', {encoding: 'utf-8'})
+    );
+
+    _.each(codes, function(code) {
+        var hash = crypto.createHash('sha1').update(code.code).digest('hex');
+
+        var options = {
+            date : new Date(),
+            code: code,
+            css  : {
+                common: fs.readFileSync(__dirname + '/../view/common.css', {encoding: 'utf-8'})
+            }
+        }
+
+        fs.writeFileSync(
+            outputDirectory + '/' + hash + '.html',
+            codeReportDotHtml(options),
+            {
+                flag    : 'w',
+                encoding: 'utf8'
+            }
+        );
+    });
+
 }
 
 function upperCaseFirst(string) {

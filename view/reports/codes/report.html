@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Accessibility report (<%- date %>)</title>
+  <base href="." />
+
+  <style>
+    <%= css.common %>
+
+    #reports {
+      list-style: none;
+    }
+
+    .report {
+      font-size: 1.2em;
+      margin-bottom: 1em;
+    }
+
+    .report > a {
+
+    }
+  </style>
+  <script>
+
+  </script>
+</head>
+
+<body>
+  <h1>Accessibility report for <%- code.code %></h1>
+  <p class="infos">Generated at <%- date %>.</p>
+  <p class="infos"><%- code.message %></p>
+
+  <ul id="reports">
+    <%
+      _.each(
+          code.urls,
+          function (url, index) {
+              %>
+              <li class="report">
+                <a href="<%- url %>"><%- url.url %><a><br />
+                <%- url.context %><br />
+                <%- url.selector %>
+              </li>
+              <%
+          }
+      )
+    %>
+  </ul>
+</body>
+</html>
