@@ -171,6 +171,8 @@ function codesReport(options) {
             if (match.length == 0) {
                 var hash = crypto.createHash('sha1').update(obj.code).digest('hex');
                 codes.push({
+                    type: obj.type,
+                    level: obj.level,
                     code: obj.code,
                     reportUrl: './' + hash + '.html',
                     message: obj.message,
@@ -179,11 +181,13 @@ function codesReport(options) {
                 });
             }
             else {
-                match[0].instances++;
+                ++match[0].instances;
                 match[0].urls.push(url);
             }
         });
     });
+
+    codes = _.sortBy(codes, function(o) { return -o.instances; });
 
     // Codes index page
     var indexDotHtml = _.template(
@@ -191,6 +195,7 @@ function codesReport(options) {
     );
 
     var options = {
+        url: options.url,
         date : new Date(),
         codes: codes,
         css  : {

@@ -231,7 +231,8 @@ if ((1 === program.args.length && '-' === program.args[0]) || 1 < program.args.l
 // Generate codes report after crawl finishes
 var reporter = require('./reporter/html');
 reporter.codesReport({
-    outputDirectory: program.output
+    outputDirectory: program.output,
+    url            : program.args[0]
 });
 
 process.on(
