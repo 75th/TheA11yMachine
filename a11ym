@@ -228,13 +228,6 @@ if ((1 === program.args.length && '-' === program.args[0]) || 1 < program.args.l
     crawler.start(testQueue);
 }
 
-// Generate codes report after crawl finishes
-var reporter = require('./reporter/html');
-reporter.codesReport({
-    outputDirectory: program.output,
-    url            : program.args[0]
-});
-
 process.on(
     'SIGINT',
     new function () {
@@ -250,6 +243,20 @@ process.on(
             }
 
             firstSignal = false;
+        }
+    }
+);
+
+process.on(
+    'exit',
+    new function() {
+        return function() {
+            // Generate codes report after crawl finishes
+            var reporter = require('./reporter/html');
+            reporter.codesReport({
+                outputDirectory: program.output,
+                url            : program.args[0]
+            });
         }
     }
 );
