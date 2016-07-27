@@ -177,7 +177,8 @@ function codesReport(options) {
                     reportUrl: './' + hash + '.html',
                     message: obj.message,
                     instances: 1,
-                    urls: [url]
+                    urls: [url],
+                    noteCodes: obj.noteCodes
                 });
             }
             else {

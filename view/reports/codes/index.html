@@ -189,11 +189,17 @@
               %>
               <li class="result" data-result-type="<%- code.type %>" data-result-level="<%- code.level %>" data-result-index="<%- index %>">
                 <aside><%- code.type %></aside>
-                <h2><%- code.level.charAt(0).toUpperCase() + code.level.substring(1).toLowerCase() %> - <%- code.message %></h2>
+                <h2>(<strong><a href="<%- code.reportUrl %>"><%- code.instances %></a></strong>) <%- code.level.charAt(0).toUpperCase() + code.level.substring(1).toLowerCase() %> - <%- code.message %></h2>
                 <% if ('a11y' === code.type) { %>
-                  <p class="notes">
-                    <strong><%- code.instances %></strong>
-                    <code><a href="<%- code.reportUrl %>"><%- code.code %></a></code>
+                  <p class="notes">Note codes: <%=
+                    _.map(
+                        code.noteCodes,
+                        function (noteCode) {
+                            return '<a href="http://www.w3.org/TR/WCAG20-TECHS/' + noteCode + '.html">' + noteCode + '</a>';
+                        }
+                    )
+                    .join(', ')
+                  %> <code>#<%- code.code %></code>
                   </p>
                 <% } %>
               </li>
