@@ -9,6 +9,45 @@
   <style>
     <%= css.common %>
 
+    input[id^="sort-by"] {
+      display: none;
+    }
+
+    input[id^="sort"] + label {
+      cursor: pointer;
+      font-weight: bold;
+      margin-right: .4em;
+      padding: .3em .8em;
+      border-radius: .5em;
+    }
+
+    #sort-by-errors + label {
+      color: rgb(244, 96, 37);
+    }
+
+      #sort-by-errors:checked + label {
+        color: #fff;
+        background: rgb(244, 96, 37);
+      }
+
+    #sort-by-warnings + label {
+      color: rgb(254, 178, 54);
+    }
+
+      #sort-by-warnings:checked + label {
+        color: #000;
+        background: rgb(254, 178, 54);
+      }
+
+    #sort-by-notices + label {
+      color: rgb(10, 172, 207);
+    }
+
+      #sort-by-notices:checked + label {
+        color: #fff;
+        background: rgb(10, 172, 207);
+      }
+
     input[id^="filter"] {
       display: none;
     }
@@ -173,13 +212,45 @@
     }
   </style>
   <script>
+  function toggleFilter(name) {
+      var classList = document.querySelector('#results').classList;
 
+      if (true === document.querySelector('#filter-' + name).checked) {
+          classList.remove('filter-' + name);
+      } else {
+          classList.add('filter-' + name);
+      }
+  }
   </script>
 </head>
 
 <body>
   <h1>Accessibility report for <%- url %></h1>
   <p class="infos">Generated at <%- date %>.</p>
+
+  <div id="controls">
+    <p>
+      Filter by:
+      <input
+        type="checkbox"
+        id="filter-errors"
+        checked="checked"
+        onclick="toggleFilter('errors')" />
+      <label for="filter-errors">errors</label>
+      <input
+        type="checkbox"
+        id="filter-warnings"
+        checked="checked"
+        onclick="toggleFilter('warnings')" />
+      <label for="filter-warnings">warnings</label>
+      <input
+        type="checkbox"
+        id="filter-notices"
+        checked="checked"
+        onclick="toggleFilter('notices')" />
+      <label for="filter-notices">notices</label>
+    </p>
+  </div>
 
   <ul id="results">
     <%
